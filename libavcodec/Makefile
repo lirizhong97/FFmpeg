@@ -18,7 +18,6 @@ HEADERS = avcodec.h                                                     \
           videotoolbox.h                                                \
           vorbis_parser.h                                               \
           xvmc.h                                                        \
-          h264dec.h                                                     \   
 
 OBJS = allcodecs.o                                                      \
        audioconvert.o                                                   \
