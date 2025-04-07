@@ -1664,7 +1664,7 @@ static int h264_field_start(H264Context *h, const H264SliceContext *sl,
     return 0;
 }
 
-static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
+static int h264_slice_header_parse(H264Context *h, H264SliceContext *sl,
                                    const H2645NAL *nal)
 {
     const SPS *sps;
