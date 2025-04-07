@@ -46,6 +46,7 @@
 #include "internal.h"
 #include "mpegutils.h"
 #include "parser.h"
+#include "h264dec.h"
 
 typedef struct H264ParseContext {
     ParseContext pc;
@@ -251,6 +252,7 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     int q264 = buf_size >=4 && !memcmp("Q264", buf, 4);
     int field_poc[2];
     int ret;
+    H264Context *h = avctx->priv_data;
 
     /* set some sane default values */
     s->pict_type         = AV_PICTURE_TYPE_I;
@@ -326,6 +328,7 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             break;
         case H264_NAL_IDR_SLICE:
             s->key_frame = 1;
+            h->gop_valid = 1;
 
             p->poc.prev_frame_num        = 0;
             p->poc.prev_frame_num_offset = 0;
@@ -339,6 +342,7 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             if (p->sei.recovery_point.recovery_frame_cnt >= 0) {
                 /* key frame, since recovery_frame_cnt is set */
                 s->key_frame = 1;
+                h->gop_valid = 1;
             }
             pps_id = get_ue_golomb(&nal.gb);
             if (pps_id >= MAX_PPS_COUNT) {
@@ -377,6 +381,7 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             // heuristic to detect non marked keyframes
             if (p->ps.sps->ref_frame_count <= 1 && p->ps.pps->ref_count[0] <= 1 && s->pict_type == AV_PICTURE_TYPE_I)
                 s->key_frame = 1;
+                h->gop_valid = 1;
 
             p->poc.frame_num = get_bits(&nal.gb, sps->log2_max_frame_num);
 
