@@ -1675,6 +1675,11 @@ static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
     int first_slice = sl == h->slice_ctx && !h->current_slice;
     int picture_structure;
 
+    if (nal->type == H264_NAL_IDR_SLICE) {
+        h->gop_valid = 1;
+        av_log(h->avctx, AV_LOG_DEBUG, "IDR detected, GOP marked valid\n");
+    }
+
     if (first_slice)
         av_assert0(!h->setup_finished);
 
