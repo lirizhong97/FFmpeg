@@ -39,6 +39,7 @@
 #include "libavcodec/bytestream.h"
 #include "libavcodec/internal.h"
 #include "libavcodec/raw.h"
+#include "libavcodec/h264dec.h"
 
 #include "audiointerleave.h"
 #include "avformat.h"
@@ -1726,6 +1727,7 @@ int av_read_frame(AVFormatContext *s, AVPacket *pkt)
     int eof = 0;
     int ret;
     AVStream *st;
+    H264Context *h = s->priv_data;
 
     if (!genpts) {
         ret = s->internal->packet_buffer
@@ -1800,6 +1802,7 @@ int av_read_frame(AVFormatContext *s, AVPacket *pkt)
     }
 
 return_packet:
+    pkt->gop_valid = h->gop_valid;
 
     st = s->streams[pkt->stream_index];
     if ((s->iformat->flags & AVFMT_GENERIC_INDEX) && pkt->flags & AV_PKT_FLAG_KEY) {
