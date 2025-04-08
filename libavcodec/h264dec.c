@@ -989,7 +989,7 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
     AVFrame *pict      = data;
     int buf_index;
     int ret;
-
+    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG h264_decode_frame frame:%p, avpkt:%p\n", data, avpkt);
     h->flags = avctx->flags;
     h->setup_finished = 0;
     h->nb_slice_ctx_queued = 0;

@@ -372,7 +372,7 @@ static int decode_simple_internal(AVCodecContext *avctx, AVFrame *frame)
     AVPacket tmp;
     int got_frame, actual_got_frame, did_split;
     int ret;
-
+    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG decode_simple_internal frame:%p\n", frame);
     if (!pkt->data && !avci->draining) {
         av_packet_unref(pkt);
         ret = ff_decode_get_packet(avctx, pkt);
@@ -615,7 +615,7 @@ FF_ENABLE_DEPRECATION_WARNINGS
 static int decode_simple_receive_frame(AVCodecContext *avctx, AVFrame *frame)
 {
     int ret;
-
+    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG decode_simple_receive_frame frame:%p\n", frame);
     while (!frame->buf[0]) {
         ret = decode_simple_internal(avctx, frame);
         if (ret < 0)
@@ -629,7 +629,7 @@ static int decode_receive_frame_internal(AVCodecContext *avctx, AVFrame *frame)
 {
     AVCodecInternal *avci = avctx->internal;
     int ret;
-
+    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG decode_receive_frame_internal frame:%p\n", frame);
     av_assert0(!frame->buf[0]);
 
     if (avctx->codec->receive_frame)

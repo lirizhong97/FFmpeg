@@ -1677,7 +1677,6 @@ static int h264_slice_header_parse(H264Context *h, H264SliceContext *sl,
 
     if (nal->type == H264_NAL_IDR_SLICE) {
         h->gop_valid = 1;
-        av_log(h->avctx, AV_LOG_DEBUG, "IDR detected, GOP marked valid\n");
     }
 
     if (first_slice)
@@ -2027,7 +2026,7 @@ int ff_h264_queue_decode_slice(H264Context *h, const H2645NAL *nal)
     H264SliceContext *sl = h->slice_ctx + h->nb_slice_ctx_queued;
     int first_slice = sl == h->slice_ctx && !h->current_slice;
     int ret;
-
+    av_log(h->avctx, AV_LOG_DEBUG, "MYDEBUG ff_h264_queue_decode_slice H264Context:%p, H2645NAL:%p\n", h, nal);
     sl->gb = nal->gb;
 
     ret = h264_slice_header_parse(h, sl, nal);

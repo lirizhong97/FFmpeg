@@ -254,6 +254,9 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     int ret;
     H264Context *h = avctx->priv_data;
 
+    av_log(avctx, AV_LOG_DEBUG,
+        "MYDEBUG parse_nal_units AVCodecParserContext:%p, AVCodecContext:%p\n", s, avctx);
+
     /* set some sane default values */
     s->pict_type         = AV_PICTURE_TYPE_I;
     s->key_frame         = 0;
@@ -328,7 +331,6 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             break;
         case H264_NAL_IDR_SLICE:
             s->key_frame = 1;
-            h->gop_valid = 1;
 
             p->poc.prev_frame_num        = 0;
             p->poc.prev_frame_num_offset = 0;
@@ -342,7 +344,6 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             if (p->sei.recovery_point.recovery_frame_cnt >= 0) {
                 /* key frame, since recovery_frame_cnt is set */
                 s->key_frame = 1;
-                h->gop_valid = 1;
             }
             pps_id = get_ue_golomb(&nal.gb);
             if (pps_id >= MAX_PPS_COUNT) {

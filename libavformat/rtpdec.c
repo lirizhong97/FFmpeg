@@ -617,7 +617,8 @@ static int rtp_parse_packet_internal(RTPDemuxContext *s, AVPacket *pkt,
     AVStream *st;
     uint32_t timestamp;
     int rv = 0;
-
+    av_log(s->ic, AV_LOG_ERROR,
+        "MYDEBUG rtp_parse_packet_internal pkt:%p\n", pkt);
     csrc         = buf[0] & 0x0f;
     ext          = buf[0] & 0x10;
     payload_type = buf[1] & 0x7f;
@@ -746,6 +747,9 @@ static int rtp_parse_queued_packet(RTPDemuxContext *s, AVPacket *pkt)
     int rv;
     RTPPacket *next;
 
+    av_log(s->ic, AV_LOG_DEBUG,
+        "MYDEBUG rtp_parse_queued_packet AVPacket:%p\n", pkt);
+
     if (s->queue_len <= 0)
         return -1;
 
@@ -770,7 +774,8 @@ static int rtp_parse_one_packet(RTPDemuxContext *s, AVPacket *pkt,
     int flags = 0;
     uint32_t timestamp;
     int rv = 0;
-
+    av_log(s->ic, AV_LOG_DEBUG,
+        "MYDEBUG rtp_parse_one_packet pkt:%p\n", pkt);
     if (!buf) {
         /* If parsing of the previous packet actually returned 0 or an error,
          * there's nothing more to be parsed from that packet, but we may have
@@ -854,6 +859,7 @@ int ff_rtp_parse_packet(RTPDemuxContext *s, AVPacket *pkt,
                         uint8_t **bufptr, int len)
 {
     int rv;
+    av_log(s->ic, AV_LOG_DEBUG, "MYDEBUG ff_rtp_parse_packet pkt:%p.\n", pkt);
     if (s->srtp_enabled && bufptr && ff_srtp_decrypt(&s->srtp, *bufptr, &len) < 0)
         return -1;
     rv = rtp_parse_one_packet(s, pkt, bufptr, len);
