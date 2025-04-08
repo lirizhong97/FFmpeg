@@ -582,7 +582,7 @@ static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, 
 
 static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
     int ret = AVERROR(EAGAIN);
-    av_log(d->avctx, AV_LOG_DEBUG, "decoder_decode_frame frame:%p.\n", frame);
+    av_log(!d?NULL:d->avctx, AV_LOG_DEBUG, "MYDEBUG decoder_decode_frame frame:%p.\n", frame);
     for (;;) {
         AVPacket pkt;
 

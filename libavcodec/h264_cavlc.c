@@ -446,7 +446,6 @@ static int decode_residual(const H264Context *h, H264SliceContext *sl,
     int zeros_left, coeff_token, total_coeff, i, trailing_ones, run_before;
 
     //FIXME put trailing_onex into the context
-    av_log(h->avctx, AV_LOG_DEBUG, "MYDEBUG decode_residual H264Context:%p, H264SliceContext:%p, GetBitContext:%p\n", h, sl, gb);
 
     if(max_coeff <= 8){
         if (max_coeff == 4)

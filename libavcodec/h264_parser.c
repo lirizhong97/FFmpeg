@@ -46,7 +46,6 @@
 #include "internal.h"
 #include "mpegutils.h"
 #include "parser.h"
-#include "h264dec.h"
 
 typedef struct H264ParseContext {
     ParseContext pc;
@@ -252,10 +251,8 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     int q264 = buf_size >=4 && !memcmp("Q264", buf, 4);
     int field_poc[2];
     int ret;
-    H264Context *h = avctx->priv_data;
 
-    av_log(avctx, AV_LOG_DEBUG,
-        "MYDEBUG parse_nal_units AVCodecParserContext:%p, AVCodecContext:%p\n", s, avctx);
+    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG parse_nal_units AVCodecParserContext:%p, AVCodecContext:%p\n", s, avctx);
 
     /* set some sane default values */
     s->pict_type         = AV_PICTURE_TYPE_I;
@@ -382,7 +379,6 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             // heuristic to detect non marked keyframes
             if (p->ps.sps->ref_frame_count <= 1 && p->ps.pps->ref_count[0] <= 1 && s->pict_type == AV_PICTURE_TYPE_I)
                 s->key_frame = 1;
-                h->gop_valid = 1;
 
             p->poc.frame_num = get_bits(&nal.gb, sps->log2_max_frame_num);
 

@@ -304,7 +304,6 @@ static int h264_init_context(AVCodecContext *avctx, H264Context *h)
 {
     int i;
 
-    h->gop_valid             = 1; 
     h->avctx                 = avctx;
     h->cur_chroma_format_idc = -1;
 
@@ -526,8 +525,6 @@ static void flush_dpb(AVCodecContext *avctx)
 
     ff_h264_free_tables(h);
     h->context_initialized = 0;
-    h->gop_valid = 0;
-    av_log(avctx, AV_LOG_DEBUG, "Forget old pics after a seek, GOP marked invalid\n");
 }
 
 #if FF_API_CAP_VDPAU
@@ -631,8 +628,6 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size)
     ret = ff_h2645_packet_split(&h->pkt, buf, buf_size, avctx, h->is_avc,
                                 h->nal_length_size, avctx->codec_id, avctx->flags2 & AV_CODEC_FLAG2_FAST);
     if (ret < 0) {
-        h->gop_valid = 0;
-        av_log(avctx, AV_LOG_DEBUG, "Error splitting the input into NAL units, GOP marked invalid\n");
         av_log(avctx, AV_LOG_ERROR,
                "Error splitting the input into NAL units.\n");
         return ret;
@@ -832,11 +827,6 @@ end:
                                   h->picture_structure == PICT_BOTTOM_FIELD);
     }
 
-    if (ret < 0) {
-        h->gop_valid = 0;
-        av_log(h->avctx, AV_LOG_DEBUG, "Error decoding NAL units, GOP marked invalid\n");
-    }
-
     return (ret < 0) ? ret : buf_size;
 }
 
@@ -867,10 +857,8 @@ static int output_frame(H264Context *h, AVFrame *dst, H264Picture *srcp)
 
     av_dict_set(&dst->metadata, "stereo_mode", ff_h264_sei_stereo_mode(&h->sei.frame_packing), 0);
 
-    if (srcp->sei_recovery_frame_cnt == 0) {
+    if (srcp->sei_recovery_frame_cnt == 0)
         dst->key_frame = 1;
-        h->gop_valid = 1;
-    }
 
     return 0;
 }
@@ -1016,11 +1004,8 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     buf_index = decode_nal_units(h, buf, buf_size);
-    if (buf_index < 0) {
-        h->gop_valid = 0;
-        av_log(avctx, AV_LOG_DEBUG, "Error decoding NAL units, GOP marked invalid\n");
+    if (buf_index < 0)
         return AVERROR_INVALIDDATA;
-    }
 
     if (!h->cur_pic_ptr && h->nal_unit_type == H264_NAL_END_SEQUENCE) {
         av_assert0(buf_index <= buf_size);
@@ -1032,25 +1017,19 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
             buf_size >= 4 && !memcmp("Q264", buf, 4))
             return buf_size;
         av_log(avctx, AV_LOG_ERROR, "no frame!\n");
-        h->gop_valid = 0;
-        av_log(avctx, AV_LOG_DEBUG, "Error no frame, GOP marked invalid\n");
         return AVERROR_INVALIDDATA;
     }
 
     if (!(avctx->flags2 & AV_CODEC_FLAG2_CHUNKS) ||
         (h->mb_y >= h->mb_height && h->mb_height)) {
-        if ((ret = ff_h264_field_end(h, &h->slice_ctx[0], 0)) < 0) {
-            h->gop_valid = 0;
-            av_log(avctx, AV_LOG_DEBUG, "Error field end, GOP marked invalid\n");
+        if ((ret = ff_h264_field_end(h, &h->slice_ctx[0], 0)) < 0)
             return ret;
-        }
 
         /* Wait for second field. */
         if (h->next_output_pic) {
             ret = finalize_frame(h, pict, h->next_output_pic, got_frame);
-            if (ret < 0) {
+            if (ret < 0)
                 return ret;
-            }
         }
     }
 

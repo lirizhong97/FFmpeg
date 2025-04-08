@@ -482,8 +482,7 @@ int ff_thread_decode_frame(AVCodecContext *avctx,
     int finished = fctx->next_finished;
     PerThreadContext *p;
     int err;
-    av_log(avctx, AV_LOG_DEBUG,
-        "MYDEBUG ff_thread_decode_frame frame:%p\n", picture);
+    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG ff_thread_decode_frame frame:%p\n", picture);
     /* release the async lock, permitting blocked hwaccel threads to
      * go forward while we are in this function */
     async_unlock(fctx);
