@@ -970,6 +970,13 @@ typedef struct RcOverride{
  * Show all frames before the first keyframe
  */
 #define AV_CODEC_FLAG2_SHOW_ALL       (1 << 22)
+
+/**
+ * Add by lirizhong97
+ */
+ #define AV_CODEC_FLAG2_FRAME_ERROR     (1 << 26)
+ #define AV_CODEC_FLAG2_DECODE_ERROR    (1 << 27)
+
 /**
  * Export motion vectors through frame side data
  */
@@ -1724,6 +1731,12 @@ typedef struct AVPacket {
  */
 #define AV_PKT_FLAG_TRUSTED   0x0008
 #define AV_PKT_FLAG_NEW_SEG 0x8000 ///< The packet is the first packet from a source in concat
+
+/*
+//FIXME: added by lirizhong97
+*/
+#define AV_PKT_FLAG_FRAME_ERROR         (1 << 26)
+#define AV_PKT_FLAG_DECODE_ERROR        (1 << 27)
 
 enum AVSideDataParamChangeFlags {
     AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT  = 0x0001,

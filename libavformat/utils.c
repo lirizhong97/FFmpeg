@@ -1425,10 +1425,17 @@ static int parse_packet(AVFormatContext *s, AVPacket *pkt, int stream_index)
         int64_t next_dts = pkt->dts;
 
         av_init_packet(&out_pkt);
+		//FIXME: added by lirizhong97
+        if (st->internal->avctx) {
+            st->internal->avctx->flags2 &= ~AV_CODEC_FLAG2_FRAME_ERROR;
+        }
         len = av_parser_parse2(st->parser, st->internal->avctx,
                                &out_pkt.data, &out_pkt.size, data, size,
                                pkt->pts, pkt->dts, pkt->pos);
-
+		//FIXME: added by lirizhong97
+        if (st->internal->avctx && AV_CODEC_FLAG2_FRAME_ERROR) {
+            pkt->flags |= AV_PKT_FLAG_FRAME_ERROR;
+        }
         pkt->pts = pkt->dts = AV_NOPTS_VALUE;
         pkt->pos = -1;
         /* increment read pointer */
@@ -1727,6 +1734,8 @@ int av_read_frame(AVFormatContext *s, AVPacket *pkt)
     int ret;
     AVStream *st;
 
+    //FIXME: added by lirizhong97
+    if (pkt) pkt->flags &= ~AV_PKT_FLAG_FRAME_ERROR;
     if (!genpts) {
         ret = s->internal->packet_buffer
               ? read_from_packet_buffer(&s->internal->packet_buffer,

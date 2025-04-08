@@ -252,7 +252,7 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     int field_poc[2];
     int ret;
 
-    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG parse_nal_units AVCodecParserContext:%p, AVCodecContext:%p\n", s, avctx);
+    // av_log(avctx, AV_LOG_DEBUG, "MYDEBUG parse_nal_units AVCodecParserContext:%p, AVCodecContext:%p\n", s, avctx);
 
     /* set some sane default values */
     s->pict_type         = AV_PICTURE_TYPE_I;
@@ -557,6 +557,8 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     /* didn't find a picture! */
     av_log(avctx, AV_LOG_ERROR, "missing picture in access unit with size %d\n", buf_size);
 fail:
+	//FIXME: add by lirizhong97
+    if (avctx) avctx->flags2 |= AV_CODEC_FLAG2_FRAME_ERROR;
     av_freep(&nal.rbsp_buffer);
     return -1;
 }

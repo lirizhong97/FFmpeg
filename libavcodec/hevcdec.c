@@ -3117,8 +3117,10 @@ static int hevc_decode_frame(AVCodecContext *avctx, void *data, int *got_output,
 
     s->ref = NULL;
     ret    = decode_nal_units(s, avpkt->data, avpkt->size);
-    if (ret < 0)
+    if (ret < 0) {
+        if (avpkt) avpkt->flags |= AV_PKT_FLAG_FRAME_ERROR;
         return ret;
+    }
 
     if (avctx->hwaccel) {
         if (s->ref && (ret = avctx->hwaccel->end_frame(avctx)) < 0) {

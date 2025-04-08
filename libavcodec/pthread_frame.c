@@ -198,8 +198,14 @@ static attribute_align_arg void *frame_worker_thread(void *arg)
 
         av_frame_unref(p->frame);
         p->got_frame = 0;
+        //FIXME: added by lirizhong97
+        p->frame->flags &= ~AV_PKT_FLAG_FRAME_ERROR;
+        p->avpkt.flags &= ~AV_PKT_FLAG_FRAME_ERROR;
         p->result = codec->decode(avctx, p->frame, &p->got_frame, &p->avpkt);
-        av_log(avctx, AV_LOG_DEBUG, "MYDEBUG frame_worker_thread frame:%p, pkt:%p.\n", p->frame, &p->avpkt);
+        if (p->avpkt.flags & AV_PKT_FLAG_FRAME_ERROR) {
+            p->frame->flags |= AV_PKT_FLAG_FRAME_ERROR;
+        }
+        // av_log(avctx, AV_LOG_DEBUG, "MYDEBUG frame_worker_thread frame:%p, pkt:%p.\n", p->frame, &p->avpkt);
         if ((p->result < 0 || !p->got_frame) && p->frame->buf[0]) {
             if (avctx->internal->allocate_progress)
                 av_log(avctx, AV_LOG_ERROR, "A frame threaded decoder did not "
@@ -482,7 +488,7 @@ int ff_thread_decode_frame(AVCodecContext *avctx,
     int finished = fctx->next_finished;
     PerThreadContext *p;
     int err;
-    av_log(avctx, AV_LOG_DEBUG, "MYDEBUG ff_thread_decode_frame frame:%p\n", picture);
+    // av_log(avctx, AV_LOG_DEBUG, "MYDEBUG ff_thread_decode_frame frame:%p\n", picture);
     /* release the async lock, permitting blocked hwaccel threads to
      * go forward while we are in this function */
     async_unlock(fctx);

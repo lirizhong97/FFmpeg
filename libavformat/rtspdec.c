@@ -816,7 +816,7 @@ static int rtsp_read_packet(AVFormatContext *s, AVPacket *pkt)
     int ret;
     RTSPMessageHeader reply1, *reply = &reply1;
     char cmd[1024];
-    av_log(s, AV_LOG_DEBUG, "MYDEBUG rtsp_read_packet pkt:%p\n", pkt);
+
 retry:
     if (rt->server_type == RTSP_SERVER_REAL) {
         int i;

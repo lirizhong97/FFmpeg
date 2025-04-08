@@ -2107,7 +2107,7 @@ int ff_rtsp_fetch_packet(AVFormatContext *s, AVPacket *pkt)
     int ret, len;
     RTSPStream *rtsp_st, *first_queue_st = NULL;
     int64_t wait_end = 0;
-    av_log(s, AV_LOG_DEBUG, "MYDEBUG ff_rtsp_fetch_packet pkt:%p\n", pkt);
+    // av_log(s, AV_LOG_DEBUG, "MYDEBUG ff_rtsp_fetch_packet pkt:%p\n", pkt);
     if (rt->nb_byes == rt->nb_rtsp_streams)
         return AVERROR_EOF;
 

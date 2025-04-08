@@ -2022,7 +2022,7 @@ int ff_h264_queue_decode_slice(H264Context *h, const H2645NAL *nal)
     H264SliceContext *sl = h->slice_ctx + h->nb_slice_ctx_queued;
     int first_slice = sl == h->slice_ctx && !h->current_slice;
     int ret;
-    av_log(!h?NULL:h->avctx, AV_LOG_DEBUG, "MYDEBUG ff_h264_queue_decode_slice H264Context:%p, H2645NAL:%p\n", h, nal);
+    // av_log(!h?NULL:h->avctx, AV_LOG_DEBUG, "MYDEBUG ff_h264_queue_decode_slice H264Context:%p, H2645NAL:%p\n", h, nal);
     sl->gb = nal->gb;
 
     ret = h264_slice_header_parse(h, sl, nal);
@@ -2575,6 +2575,10 @@ static int decode_slice(struct AVCodecContext *avctx, void *arg)
 
             ret = ff_h264_decode_mb_cabac(h, sl);
             // STOP_TIMER("decode_mb_cabac")
+			//FIXME: add by lirizhong97
+            if (ret < 0) {
+                avctx->flags |= AV_CODEC_FLAG2_FRAME_ERROR;
+            }
 
             if (ret >= 0)
                 ff_h264_hl_decode_mb(h, sl);
@@ -2584,6 +2588,10 @@ static int decode_slice(struct AVCodecContext *avctx, void *arg)
                 sl->mb_y++;
 
                 ret = ff_h264_decode_mb_cabac(h, sl);
+                //FIXME: add by lirizhong97
+                if (ret < 0) {
+                    avctx->flags |= AV_CODEC_FLAG2_FRAME_ERROR;
+                }
 
                 if (ret >= 0)
                     ff_h264_hl_decode_mb(h, sl);
@@ -2646,6 +2654,10 @@ static int decode_slice(struct AVCodecContext *avctx, void *arg)
             }
 
             ret = ff_h264_decode_mb_cavlc(h, sl);
+			//FIXME: add by lirizhong97
+            if (ret < 0) {
+                avctx->flags |= AV_CODEC_FLAG2_FRAME_ERROR;
+            }
 
             if (ret >= 0)
                 ff_h264_hl_decode_mb(h, sl);
@@ -2654,7 +2666,10 @@ static int decode_slice(struct AVCodecContext *avctx, void *arg)
             if (ret >= 0 && FRAME_MBAFF(h)) {
                 sl->mb_y++;
                 ret = ff_h264_decode_mb_cavlc(h, sl);
-
+				//FIXME: add by lirizhong97
+                if (ret < 0) {
+                    avctx->flags |= AV_CODEC_FLAG2_FRAME_ERROR;
+                }
                 if (ret >= 0)
                     ff_h264_hl_decode_mb(h, sl);
                 sl->mb_y--;
