@@ -582,7 +582,7 @@ static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, 
 
 static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
     int ret = AVERROR(EAGAIN);
-    // av_log(!d?NULL:d->avctx, AV_LOG_DEBUG, "MYDEBUG decoder_decode_frame frame:%p.\n", frame);
+
     for (;;) {
         AVPacket pkt;
 
@@ -3040,14 +3040,7 @@ static int read_thread(void *arg)
             packet_queue_put(&is->audioq, pkt);
         } else if (pkt->stream_index == is->video_stream && pkt_in_play_range
                    && !(is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
-            // FIXME: added by lirizhong97
-            // packet_queue_put(&is->videoq, pkt);
-            if (pkt->flags & AV_PKT_FLAG_FRAME_ERROR) {
-                av_packet_unref(pkt);
-				av_log(NULL, AV_LOG_DEBUG, "AV frame error flag hits.\n");
-            } else {
-                packet_queue_put(&is->videoq, pkt);
-            }
+            packet_queue_put(&is->videoq, pkt);
         } else if (pkt->stream_index == is->subtitle_stream && pkt_in_play_range) {
             packet_queue_put(&is->subtitleq, pkt);
         } else {

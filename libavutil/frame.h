@@ -433,12 +433,6 @@ typedef struct AVFrame {
  * @}
  */
 
- //FIXME: added by lirizhong97
-#ifndef AV_PKT_FLAG_FRAME_ERROR
-#define AV_PKT_FLAG_FRAME_ERROR         (1 << 26)
-#define AV_PKT_FLAG_DECODE_ERROR        (1 << 27)
-#endif
-
     /**
      * Frame flags, a combination of @ref lavu_frame_flags
      */

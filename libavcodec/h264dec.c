@@ -977,7 +977,7 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
     AVFrame *pict      = data;
     int buf_index;
     int ret;
-    // av_log(avctx, AV_LOG_DEBUG, "MYDEBUG h264_decode_frame frame:%p, avpkt:%p\n", data, avpkt);
+
     h->flags = avctx->flags;
     h->setup_finished = 0;
     h->nb_slice_ctx_queued = 0;
@@ -1004,11 +1004,8 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     buf_index = decode_nal_units(h, buf, buf_size);
-    if (buf_index < 0) {
-		//FIXME: add by lirizhong97
-        if (avpkt) avpkt->flags |= AV_PKT_FLAG_FRAME_ERROR;
+    if (buf_index < 0)
         return AVERROR_INVALIDDATA;
-    }
 
     if (!h->cur_pic_ptr && h->nal_unit_type == H264_NAL_END_SEQUENCE) {
         av_assert0(buf_index <= buf_size);
@@ -1037,8 +1034,7 @@ static int h264_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     av_assert0(pict->buf[0] || !*got_frame);
-	//FIXME: add by lirizhong97
-    if (avpkt) avpkt->flags &= ~AV_PKT_FLAG_FRAME_ERROR;
+
     ff_h264_unref_picture(h, &h->last_pic_for_ec);
 
     return get_consumed_bytes(buf_index, buf_size);
