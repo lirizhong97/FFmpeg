@@ -79,6 +79,7 @@ HEADERS = adler32.h                                                     \
           xtea.h                                                        \
           tea.h                                                         \
           thread.h                                                      \
+          optimization.h                                                \
 
 HEADERS-$(CONFIG_LZO)                   += lzo.h
 
@@ -160,6 +161,7 @@ OBJS = adler32.o                                                        \
        xga_font_data.o                                                  \
        xtea.o                                                           \
        tea.o                                                            \
+       optimization.o                                                   \
 
 OBJS-$(!HAVE_ATOMICS_NATIVE)            += atomic.o                     \
 
