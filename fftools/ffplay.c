@@ -40,6 +40,7 @@
 #include "libavutil/samplefmt.h"
 #include "libavutil/avassert.h"
 #include "libavutil/time.h"
+#include "libavutil/optimization.h" //Added by lirizhong97
 #include "libavformat/avformat.h"
 #include "libavdevice/avdevice.h"
 #include "libswscale/swscale.h"
@@ -2144,11 +2145,17 @@ static int video_thread(void *arg)
     }
 
     for (;;) {
+        //Added by lirizhong97
+        av_optimization_decode_err(0);
         ret = get_video_frame(is, frame);
         if (ret < 0)
             goto the_end;
         if (!ret)
             continue;
+        if(av_optimization_is_decode_err()) {//Added by lirizhong97
+            av_log(NULL, AV_LOG_ERROR, "hit decode error.\n");
+            continue;
+        }
 
 #if CONFIG_AVFILTER
         if (   last_w != frame->width
@@ -3008,6 +3015,8 @@ static int read_thread(void *arg)
                 goto fail;
             }
         }
+        //Added by lirizhong97
+        av_optimization_frame_err(0);
         ret = av_read_frame(ic, pkt);
         if (ret < 0) {
             if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
@@ -3028,6 +3037,12 @@ static int read_thread(void *arg)
         } else {
             is->eof = 0;
         }
+        
+        if (pkt->stream_index == is->video_stream && (pkt->flags & AV_PKT_FLAG_KEY)) {
+            av_optimization_frame_err(0);
+            av_optimization_decode_err(0);
+        }
+
         /* check if packet is in play range specified by user, then queue, otherwise discard */
         stream_start_time = ic->streams[pkt->stream_index]->start_time;
         pkt_ts = pkt->pts == AV_NOPTS_VALUE ? pkt->dts : pkt->pts;
@@ -3040,7 +3055,12 @@ static int read_thread(void *arg)
             packet_queue_put(&is->audioq, pkt);
         } else if (pkt->stream_index == is->video_stream && pkt_in_play_range
                    && !(is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
-            packet_queue_put(&is->videoq, pkt);
+            
+            if (!av_optimization_is_frame_err()) {//Added by lirizhong97
+                packet_queue_put(&is->videoq, pkt);
+            } else {//release the packet when frame error during total GOP
+                av_packet_unref(pkt);
+            }
         } else if (pkt->stream_index == is->subtitle_stream && pkt_in_play_range) {
             packet_queue_put(&is->subtitleq, pkt);
         } else {
@@ -3116,6 +3136,8 @@ fail:
         stream_close(is);
         return NULL;
     }
+    //Added by lirizhong97
+    av_optimization_init();
     return is;
 }
 

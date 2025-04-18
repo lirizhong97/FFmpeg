@@ -35,6 +35,7 @@
 #include "libavutil/log.h"
 #include "libavutil/mem.h"
 #include "libavutil/pixfmt.h"
+#include "libavutil/optimization.h" //Added by lirizhong97
 
 #include "avcodec.h"
 #include "get_bits.h"
@@ -349,6 +350,8 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             if (!p->ps.pps_list[pps_id]) {
                 av_log(avctx, AV_LOG_ERROR,
                        "non-existing PPS %u referenced\n", pps_id);
+                //Added by lirizhong97
+                av_optimization_frame_err(1);
                 goto fail;
             }
 
@@ -364,6 +367,8 @@ static inline int parse_nal_units(AVCodecParserContext *s,
             if (!p->ps.sps_list[p->ps.pps->sps_id]) {
                 av_log(avctx, AV_LOG_ERROR,
                        "non-existing SPS %u referenced\n", p->ps.pps->sps_id);
+                //Added by lirizhong97
+                av_optimization_frame_err(1);
                 goto fail;
             }
 
@@ -554,6 +559,8 @@ static inline int parse_nal_units(AVCodecParserContext *s,
     }
     /* didn't find a picture! */
     av_log(avctx, AV_LOG_ERROR, "missing picture in access unit with size %d\n", buf_size);
+    //Added by lirizhong97
+    av_optimization_frame_err(1);
 fail:
     av_freep(&nal.rbsp_buffer);
     return -1;

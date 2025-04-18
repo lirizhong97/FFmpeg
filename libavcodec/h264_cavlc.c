@@ -36,6 +36,7 @@
 #include "golomb.h"
 #include "mpegutils.h"
 #include "libavutil/avassert.h"
+#include "libavutil/optimization.h" //Added by lirizhong97
 
 
 static const uint8_t golomb_to_inter_cbp_gray[16]={
@@ -472,6 +473,8 @@ static int decode_residual(const H264Context *h, H264SliceContext *sl,
         return 0;
     if(total_coeff > (unsigned)max_coeff) {
         av_log(h->avctx, AV_LOG_ERROR, "corrupted macroblock %d %d (total_coeff=%d)\n", sl->mb_x, sl->mb_y, total_coeff);
+        //Added by lirizhong97
+        av_optimization_frame_err(1);
         return -1;
     }
 
@@ -513,6 +516,8 @@ static int decode_residual(const H264Context *h, H264SliceContext *sl,
                 if(prefix>=16){
                     if(prefix > 25+3){
                         av_log(h->avctx, AV_LOG_ERROR, "Invalid level prefix\n");
+                        //Added by lirizhong97
+                        av_optimization_frame_err(1);
                         return -1;
                     }
                     level_code += (1<<(prefix-3))-4096;
@@ -551,6 +556,8 @@ static int decode_residual(const H264Context *h, H264SliceContext *sl,
                     if (prefix>=16) {
                         if(prefix > 25+3){
                             av_log(h->avctx, AV_LOG_ERROR, "Invalid level prefix\n");
+                            //Added by lirizhong97
+                            av_optimization_frame_err(1);
                             return AVERROR_INVALIDDATA;
                         }
                         level_code += (1<<(prefix-3))-4096;
@@ -622,6 +629,8 @@ static int decode_residual(const H264Context *h, H264SliceContext *sl,
 
     if(zeros_left<0){
         av_log(h->avctx, AV_LOG_ERROR, "negative number of zero coeffs at %d %d\n", sl->mb_x, sl->mb_y);
+        //Added by lirizhong97
+        av_optimization_frame_err(1);
         return -1;
     }
 
@@ -757,6 +766,8 @@ int ff_h264_decode_mb_cavlc(const H264Context *h, H264SliceContext *sl)
 decode_intra_mb:
         if(mb_type > 25){
             av_log(h->avctx, AV_LOG_ERROR, "mb_type %d in %c slice too large at %d %d\n", mb_type, av_get_picture_type_char(sl->slice_type), sl->mb_x, sl->mb_y);
+            //Added by lirizhong97
+            av_optimization_frame_err(1);
             return -1;
         }
         partition_count=0;

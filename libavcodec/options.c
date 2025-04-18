@@ -110,6 +110,9 @@ static int init_context_defaults(AVCodecContext *s, const AVCodec *codec)
         flags= AV_OPT_FLAG_SUBTITLE_PARAM;
     av_opt_set_defaults2(s, flags, flags);
 
+    //Added by lirizhong97
+    s->flags |= AV_CODEC_FLAG_LOW_DELAY;
+
     s->time_base           = (AVRational){0,1};
     s->framerate           = (AVRational){ 0, 1 };
     s->pkt_timebase        = (AVRational){ 0, 1 };

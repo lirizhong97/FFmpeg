@@ -30,6 +30,7 @@
 #include "libavutil/imgutils.h"
 #include "libavutil/stereo3d.h"
 #include "libavutil/timer.h"
+#include "libavutil/optimization.h" //Added by lirizhong97
 #include "internal.h"
 #include "cabac.h"
 #include "cabac_functions.h"
@@ -1728,6 +1729,8 @@ static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
         if (h->poc.frame_num != sl->frame_num) {
             av_log(h->avctx, AV_LOG_ERROR, "Frame num change from %d to %d\n",
                    h->poc.frame_num, sl->frame_num);
+            //Added by lirizhong97
+            av_optimization_decode_err(1);
             return AVERROR_INVALIDDATA;
         }
     }
@@ -2608,6 +2611,8 @@ static int decode_slice(struct AVCodecContext *avctx, void *arg)
                        sl->cabac.bytestream_end - sl->cabac.bytestream);
                 er_add_slice(sl, sl->resync_mb_x, sl->resync_mb_y, sl->mb_x,
                              sl->mb_y, ER_MB_ERROR);
+                //Added by lirizhong97
+                av_optimization_decode_err(1);
                 return AVERROR_INVALIDDATA;
             }
 

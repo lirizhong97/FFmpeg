@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+ #include "libavutil/optimization.h" //Added by lirizhong97
+
 #include "bytestream.h"
 #include "get_bits.h"
 #include "golomb.h"
@@ -143,6 +145,8 @@ int ff_h264_check_intra4x4_pred_mode(int8_t *pred_mode_cache, void *logctx,
                 av_log(logctx, AV_LOG_ERROR,
                        "top block unavailable for requested intra mode %d\n",
                        status);
+                //Added by lirizhong97
+                av_optimization_frame_err(1);       
                 return AVERROR_INVALIDDATA;
             } else if (status) {
                 pred_mode_cache[scan8[0] + i] = status;
@@ -159,6 +163,8 @@ int ff_h264_check_intra4x4_pred_mode(int8_t *pred_mode_cache, void *logctx,
                     av_log(logctx, AV_LOG_ERROR,
                            "left block unavailable for requested intra4x4 mode %d\n",
                            status);
+                    //Added by lirizhong97
+                    av_optimization_frame_err(1);
                     return AVERROR_INVALIDDATA;
                 } else if (status) {
                     pred_mode_cache[scan8[0] + 8 * i] = status;
@@ -183,6 +189,8 @@ int ff_h264_check_intra_pred_mode(void *logctx, int top_samples_available,
     if (mode > 3U) {
         av_log(logctx, AV_LOG_ERROR,
                "out of range intra chroma pred mode\n");
+        //Added by lirizhong97
+        av_optimization_frame_err(1);
         return AVERROR_INVALIDDATA;
     }
 
@@ -191,6 +199,8 @@ int ff_h264_check_intra_pred_mode(void *logctx, int top_samples_available,
         if (mode < 0) {
             av_log(logctx, AV_LOG_ERROR,
                    "top block unavailable for requested intra mode\n");
+            //Added by lirizhong97
+            av_optimization_frame_err(1);
             return AVERROR_INVALIDDATA;
         }
     }
@@ -200,6 +210,8 @@ int ff_h264_check_intra_pred_mode(void *logctx, int top_samples_available,
         if (mode < 0) {
             av_log(logctx, AV_LOG_ERROR,
                    "left block unavailable for requested intra mode\n");
+            //Added by lirizhong97
+            av_optimization_frame_err(1);
             return AVERROR_INVALIDDATA;
         }
         if (is_chroma && (left_samples_available & 0x8080)) {

@@ -29,6 +29,7 @@
 
 #include "libavutil/atomic.h"
 #include "libavutil/internal.h"
+#include "libavutil/optimization.h" //Added by lirizhong97
 #include "avcodec.h"
 #include "error_resilience.h"
 #include "me_cmp.h"
@@ -846,6 +847,8 @@ void ff_er_add_slice(ERContext *s, int startx, int starty,
     if (start_i > end_i || start_xy > end_xy) {
         av_log(s->avctx, AV_LOG_ERROR,
                "internal error, slice end before start\n");
+        //Added by lirizhong97
+        av_optimization_frame_err(1);
         return;
     }
 
