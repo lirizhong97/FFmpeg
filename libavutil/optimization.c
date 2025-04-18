@@ -20,6 +20,7 @@
  * @file
  * Optimization
  */
+#include "optimization.h"
 
 Optimization g_opt = {0};
 
