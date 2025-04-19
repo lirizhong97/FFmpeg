@@ -35,7 +35,7 @@ void av_optimization_frame_err(int frame_err);
 void av_optimization_decode_err(int decode_err);
 void av_optimization_marker_flag(int marker_flag);
 bool av_optimization_is_frame_err(void);
-void av_optimization_is_decode_err(void);
-void av_optimization_is_marker_flag(void);
+bool av_optimization_is_decode_err(void);
+bool av_optimization_is_marker_flag(void);
 
 #endif

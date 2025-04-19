@@ -49,12 +49,12 @@ bool av_optimization_is_frame_err(void)
     return g_opt.frame_err;
 }
 
-void av_optimization_is_decode_err(void)
+bool av_optimization_is_decode_err(void)
 {
     return g_opt.decode_err;
 }
 
-void av_optimization_is_marker_flag(void)
+bool av_optimization_is_marker_flag(void)
 {
     return g_opt.marker_flag;
 }

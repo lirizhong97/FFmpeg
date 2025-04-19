@@ -120,6 +120,11 @@ static int h264_find_frame_end(H264ParseContext *p, const uint8_t *buf,
                 state += 8;
                 continue;
             }
+            //Added by lirizhong97
+            if (nalu_type == H264_NAL_IDR_SLICE) {
+                av_optimization_frame_err(0);
+                av_optimization_decode_err(0);
+            }
             state = 7;
         } else {
             p->parse_history[p->parse_history_count++] = buf[i];

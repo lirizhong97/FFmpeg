@@ -2152,6 +2152,10 @@ static int video_thread(void *arg)
             goto the_end;
         if (!ret)
             continue;
+        if (frame->key_frame) {//Added by lirizhong97
+            av_optimization_decode_err(0);
+            av_optimization_frame_err(0);
+        }
         if(av_optimization_is_decode_err()) {//Added by lirizhong97
             av_log(NULL, AV_LOG_ERROR, "hit decode error.\n");
             continue;
