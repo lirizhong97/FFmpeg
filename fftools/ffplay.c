@@ -305,6 +305,11 @@ typedef struct VideoState {
     int last_video_stream, last_audio_stream, last_subtitle_stream;
 
     SDL_cond *continue_read_thread;
+
+    // Add by lirizhong97
+    // for low delay time with live play(realtime), control videoq/audioq duration < max_cached_duration
+    // realtime set to 0, max_cached_duration = 0 means is playback
+    int max_cached_duration;
 } VideoState;
 
 /* options specified by the user */
